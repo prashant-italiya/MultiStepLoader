@@ -8,7 +8,7 @@ A lightweight, customizable multi-step loading animation for web applications bu
 
 You can try the live demo by simply downloading the `loader.html` file and opening it in your browser. No server setup required!
 
-**[Try the live demo](https://codepen.io/multisteploader/pen/demo)** (Hosted on CodePen)
+**[Try the live demo](https://codepen.io/prashant-italiya/pen/ZYYaxjN)** (Hosted on CodePen)
 
 *Note: For the CodePen demo link to work, you would need to create a CodePen account and upload your loader there. Alternatively, you can host it on GitHub Pages after publishing this repository.*
 
