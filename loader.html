@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Steps</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .loading-steps-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .blur-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: -1;
+        }
+
+        .steps-list {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .step-item {
+            position: absolute;
+            width: 100%;
+            height: 25px;
+            padding: 5px 15px;
+            transition: all 0.5s ease;
+            left: 0;
+            opacity: 0.7;
+        }
+
+        .step-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .step-icon {
+            font-size: 20px;
+            color: #666;
+        }
+
+        .step-text {
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* Active state */
+        .step-item.active {
+            opacity: 1;
+        }
+
+        .step-item.active .step-icon {
+            color: #007bff;
+        }
+
+        /* Completed state */
+        .step-item.completed {
+            opacity: 1;
+        }
+
+        .step-item.completed .step-icon {
+            color: #28a745;
+        }
+
+        .start-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .start-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-steps-container" id="loadingSteps">
+        <div class="blur-overlay"></div>
+        <div class="steps-list" id="stepsList">
+            <!-- Steps will be added dynamically -->
+        </div>
+    </div>
+
+    <button class="start-button" id="startButton">Start Process</button>
+
+    <script>
+        const steps = [
+            'Initializing application...',
+            'Loading user data...',
+            'Fetching configurations...',
+            'Setting up workspace...',
+            'Ready to start!'
+        ];
+
+        const loadingSteps = document.getElementById('loadingSteps');
+        const stepsList = document.getElementById('stepsList');
+        const startButton = document.getElementById('startButton');
+        const STEP_HEIGHT = 40; // 50px height + 5px top padding + 5px bottom padding
+        const INITIAL_OFFSET = 300;
+
+        // Initially hide the loading steps
+        loadingSteps.style.display = 'none';
+
+        // Create step elements
+        steps.forEach((step, index) => {
+            const stepItem = document.createElement('div');
+            stepItem.className = 'step-item';
+            stepItem.innerHTML = `
+                <div class="step-content">
+                    <i class="fas fa-check-circle step-icon"></i>
+                    <span class="step-text">${step}</span>
+                </div>
+            `;
+            stepsList.appendChild(stepItem);
+        });
+
+        let currentStep = 0;
+
+        function startLoading() {
+            loadingSteps.style.display = 'flex';
+            startButton.style.display = 'none';
+            currentStep = 0;
+            
+            // Reset all steps
+            document.querySelectorAll('.step-item').forEach(item => {
+                item.className = 'step-item';
+                item.querySelector('.step-icon').className = 'fas fa-check-circle step-icon';
+                item.style.transform = `translateY(${INITIAL_OFFSET}px)`;
+            });
+
+            // Start the process
+            updateStepPositions();
+            processNextStep();
+        }
+
+        function updateStepPositions() {
+            const stepItems = document.querySelectorAll('.step-item');
+            stepItems.forEach((item, index) => {
+                console.log(index, currentStep);
+                if (index < currentStep) {
+                    // Completed steps
+                    const completedStepsBefore = currentStep - index;
+                    const newY = INITIAL_OFFSET - (completedStepsBefore * STEP_HEIGHT);
+                    item.style.transform = `translateY(${newY}px)`;
+                } else if (index === currentStep) {
+                    // Current step
+                    item.style.transform = `translateY(${INITIAL_OFFSET}px)`;
+                } else {
+                    // Future steps
+                    const futureStepsBefore = index - currentStep;
+                    const newY = INITIAL_OFFSET + (futureStepsBefore * STEP_HEIGHT);
+                    item.style.transform = `translateY(${newY}px)`;
+                }
+            });
+        }
+
+        function processNextStep() {
+            if (currentStep >= steps.length) {
+                setTimeout(() => {
+                    loadingSteps.style.display = 'none';
+                    startButton.style.display = 'block';
+                }, 2000);
+                return;
+            }
+
+            const stepItems = document.querySelectorAll('.step-item');
+            const currentItem = stepItems[currentStep];
+
+            // Set current step as active
+            currentItem.className = 'step-item active';
+            currentItem.querySelector('.step-icon').className = 'fas fa-spinner fa-spin step-icon';
+            
+            // After 2 seconds, mark as completed and move to next step
+            setTimeout(() => {
+                currentItem.className = 'step-item completed';
+                currentItem.querySelector('.step-icon').className = 'fas fa-check-circle step-icon';
+                
+                // Update positions of all steps
+                
+                currentStep++;
+                if(currentStep < steps.length) {
+                    updateStepPositions();
+                }
+                processNextStep();
+            }, 2000); // Changed from 50000ms to 2000ms for better demo experience
+        }
+
+        startButton.addEventListener('click', startLoading);
+    </script>
+</body>
+</html>
