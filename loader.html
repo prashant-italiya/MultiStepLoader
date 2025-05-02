@@ -56,6 +56,48 @@
             opacity: 0.7;
         }
 
+        .step-item.active .step-text {
+            font-size: 18px;
+            /*font-weight: bold;*/
+            position: relative;
+            background: linear-gradient(90deg, #00FFB2, #7A00FF, #FFFF00);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: shimmer 3s linear infinite;
+          }
+        
+          .step-item.active .step-text::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+            pointer-events: none;
+          }
+        
+          @keyframes shimmer {
+            0% {
+              background-position: 200% center;
+            }
+            100% {
+              background-position: -200% center;
+            }
+          }
+        
+          @keyframes pulse {
+            0%, 100% {
+              opacity: 0.1;
+            }
+            50% {
+              opacity: 0.3;
+            }
+          }
+
         .step-content {
             display: flex;
             align-items: center;
@@ -205,7 +247,7 @@
 
             // Set current step as active
             currentItem.className = 'step-item active';
-            currentItem.querySelector('.step-icon').className = 'fas fa-spinner fa-spin step-icon';
+            currentItem.querySelector('.step-icon').className = 'fas fa-sync-alt fa-spin step-icon';
             
             // After 2 seconds, mark as completed and move to next step
             setTimeout(() => {
@@ -219,7 +261,7 @@
                     updateStepPositions();
                 }
                 processNextStep();
-            }, 2000); // Changed from 50000ms to 2000ms for better demo experience
+            }, 5000); // Changed from 50000ms to 2000ms for better demo experience
         }
 
         startButton.addEventListener('click', startLoading);
